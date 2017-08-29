@@ -36,9 +36,6 @@ def parseSong(songurl):
 
 def main():
 
-	songFlag = True
-	startSong = ""
-
 	''' Get input data '''
 	version_msg = "%prog 0.1"
 	usage_msg = """%prog [URL] """
@@ -46,13 +43,7 @@ def main():
 	args = parser.parse_args(sys.argv[1:])
 
 	if len(sys.argv) == 1:
-		parser.error("Please provide azlyrics artist link.")
-
-	if len(sys.argv) == 2:
-		songFlag = False
-		startSong = args[2][0]
-
-		
+		parser.error("Please provide azlyrics artist link.")		
 
 	url = args[1][0];
 	''' html = urlopen(url) '''
@@ -71,13 +62,6 @@ def main():
 
 	''' Parse each song link ''' 
 	if not songFlag:
-		for s in soup.find_all('a', href=True):
-			sleep(random() * 2.0 + .2)
-			title = ((s['href'].split('/'))[-1]).split('.')[0]
-			if songFlag or startSong is title:
-				songFlag = True
-				parseSong(s['href'])
-	else:
 		for s in soup.find_all('a', href=True):
 			sleep(random() * 2.0 + 5)
 			parseSong(s['href'])

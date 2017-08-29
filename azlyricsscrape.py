@@ -61,10 +61,9 @@ def main():
 
 
 	''' Parse each song link ''' 
-	if not songFlag:
-		for s in soup.find_all('a', href=True):
-			sleep(random() * 2.0 + 5)
-			parseSong(s['href'])
+	for s in soup.find_all('a', href=True):
+		sleep(random() * 2.0 + 5)
+		parseSong(s['href'])
 
 
 user_agents = [

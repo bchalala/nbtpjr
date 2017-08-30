@@ -7,6 +7,7 @@ __license__	= "GPL"
 from textblob import TextBlob
 import pickle
 import random
+import argparse
 
 
 class chainlink:
@@ -46,7 +47,7 @@ class chainlink:
 		print(self.transm)
 
 
-def trainMarkov(markov, sample, filename, depth = 1):
+def trainMarkov(markov, sample, depth = 1):
 	blob = TextBlob(sample)
 	terms = blob.ngrams(n=(depth + 1))
 
@@ -59,7 +60,11 @@ def trainMarkov(markov, sample, filename, depth = 1):
 
 	return markov
 
-def generateText(markov, length, seed):
+def generateText(markov, length, seed = ""):
+	if seed == "":
+		seed = list(random.choice(list(markov.keys())))
+
+
 	if (tuple(seed) not in markov):
 		print("seed not in markov")
 		return
@@ -91,12 +96,47 @@ def test():
 
 	seedWord = list(random.choice(list(markov.keys())))
 	print(seedWord)
-	generateText(markov, 3300, seedWord)
+	generateText(markov, 3300, seedWord)		
 
-def test2():
-		
 
-test()
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-t", "--train", help="train the markov chain on an input")
+	parser.add_argument("-l", "--load", help="load existing pickle file for training")
+	parser.add_argument("-o", "--output", help="pickle output file containing markov chain")
+	args = parser.parse_args()
+
+	markov = {}
+
+	if args.load:
+		markov = pickle.load(args.load)
+
+	if args.train:
+		with open(args.train, 'r') as file:
+			trainMarkov(markov, file.read(), 1)
+
+	while True:
+		inp = input("Generate text? (y/n)\n")
+		if inp == "n":
+			break;
+		if inp == "y":
+			inp = input("How many words?\n")
+			try:
+				length = int(inp)
+				if length < 1:
+					print("Invalid input.\n\n")
+				else:
+					generateText(markov, length)
+			except ValueError:
+				print("Invalid input.\n\n")
+
+	if args.output:
+		with open(args.output, 'wb') as file:
+			pickle.dump(markov, file)
+			print("Outputting markov to file: " + args.output)
+
+
+
 
 
 
